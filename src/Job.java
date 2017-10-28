@@ -1,15 +1,24 @@
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
+import javax.print.attribute.standard.MediaSize.Other;
+
 public class Job {
 	int result = 0;
 	int private_key;
 	int reward;
 	int id;
 	
+	int difficulty;
+	
+	
 	ArrayList<ArrayList<Integer>> variable_history;
 	ArrayList<Integer> command_line_history;
 	String[] program;//the current position of the program
+	
+	int XOR = 1;//start with prime number
+	ArrayList<Integer> XOR_history;
+	ArrayList<Integer> XORS_passed;
 	
 	ArrayDeque<Integer> variable_state;//the current state of the stack machine
 	int current_line;
@@ -18,22 +27,27 @@ public class Job {
 	
 	
 	public Job clone(){
-		Job job = new Job(variable_state.clone(), program.clone(), current_line, id);
+		Job job = new Job(variable_state.clone(), program.clone(), current_line, id, difficulty);
 		return job;
 	}
 	
 	
-	public Job(ArrayDeque<Integer> init_var, String[] program, int start_line, int id){
+	public Job(ArrayDeque<Integer> init_var, String[] program, int start_line, int id, int difficulty){
 		variable_state = init_var;
 		this.program = program;
 		current_line = start_line;
 		variable_history = new ArrayList<ArrayList<Integer>>();
 		command_line_history = new ArrayList<Integer>();
+		XOR_history = new ArrayList<Integer>();
+		XORS_passed = new ArrayList<Integer>();
+		this.difficulty = difficulty;
 		
 	}
 	
 	
 	public void iterate(){
+		
+		
 		String command = program[current_line];
 		int num_a = variable_state.pop();
 		int num_b = variable_state.pop();
@@ -52,6 +66,16 @@ public class Job {
 			variable_state.push(num_a);
 			variable_state.push(Integer.parseInt(command));
 		}
+		
+		XOR_history.add(XOR);
+		XOR = XOR^num_a;
+		
+		if(XOR%difficulty == 0){
+			XORS_passed.add(XOR_history.size()-1);
+		}
+		
+		
+		
 		
 		ArrayList<Integer> new_history = new ArrayList<Integer>();
 		new_history.add(num_b);
@@ -81,6 +105,9 @@ public class Job {
 		return this;
 	}
 	
+	public boolean equals(Object Other){
+		return ((Job)Other).id == this.id;
+	}
 	
 	
 

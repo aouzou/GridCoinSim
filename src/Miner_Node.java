@@ -15,9 +15,7 @@ public class Miner_Node extends Node{
 	
 	public void run(){
 		while(true){
-			try {sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 			Master_Node master = Main.master_nodes.get((int)(Math.random()*Main.num_master_nodes));
-			
 			int job_index = (int)(Math.random()*master.available.size());
 			request_job(master, job_index);
 			
@@ -43,15 +41,15 @@ public class Miner_Node extends Node{
 	}
 	
 	public void execute_job(int job_index){
+		Job job = jobs_to_do.get(job_index).execute();
+		jobs_to_do.remove(job);
+		jobs_done.add(job);
 		try {
 			sleep(10000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Job job = jobs_to_do.get(job_index).execute();
-		jobs_to_do.remove(job);
-		jobs_done.add(job);
 	}
 	
 	public void submit(Master_Node master, int job_index){

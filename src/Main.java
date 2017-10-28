@@ -6,8 +6,12 @@ public class Main {
 	public static ArrayList<Miner_Node> miner_nodes; 
 	
 	static int num_master_nodes = 10;
-	static int num_miner_nodes = 200;
+	static int num_miner_nodes = 100;
 	static int tot_jobs_done = 0;
+	static long prev_time = System.currentTimeMillis();
+	static int prev_blockchain_length = 0;
+	static double txs;
+	static int desired_txs = 1;
 
 	public static void main(String[] args) {
 		
@@ -25,7 +29,7 @@ public class Main {
 		for(Master_Node m: master_nodes){
 			
 			try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -36,7 +40,7 @@ public class Main {
 		for(Miner_Node m: miner_nodes){
 			
 			try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -58,18 +62,31 @@ public class Main {
 					chain_size = m.blockchain.length();
 				}
 			}
+			
+			long time = System.currentTimeMillis();
+			long dt = time - prev_time;
+
+			if(dt > 10000){
+				int tx = chain_size - prev_blockchain_length;
+				txs = (((double)tx)/((double)(dt/1000)));
+				
+				prev_blockchain_length = chain_size;
+				prev_time = time;
+			}
+			
 			if(tot_jobs_done > 0){
-			int percentage = (100*chain_size)/tot_jobs_done;
+			
+				/*int percentage = (100*chain_size)/tot_jobs_done;
 			System.out.println("");
 			System.out.println("");
-			System.out.println("");
+			System.out.println("Transactions per Second is: " + txs);
 			System.out.println("");
 			System.out.println("Percentage of blocks added is: " + percentage + "%");
+			System.out.println("");
 			System.out.println("Length of chain is: " + chain_size);
 			System.out.println("");
 			System.out.println("");
-			System.out.println("");
-			System.out.println("");
+			System.out.println("");*/
 			}
 		}
 		
