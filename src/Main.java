@@ -6,12 +6,12 @@ public class Main {
 	public static ArrayList<Miner_Node> miner_nodes; 
 	
 	static int num_master_nodes = 10;
-	static int num_miner_nodes = 100;
+	static int num_miner_nodes = 1000;
 	static int tot_jobs_done = 0;
 	static long prev_time = System.currentTimeMillis();
 	static int prev_blockchain_length = 0;
 	static double txs;
-	static int desired_txs = 1;
+	static int desired_txs = 5;
 
 	public static void main(String[] args) {
 		
@@ -76,7 +76,7 @@ public class Main {
 			
 			if(tot_jobs_done > 0){
 			
-				/*int percentage = (100*chain_size)/tot_jobs_done;
+			int percentage = (100*chain_size)/tot_jobs_done;
 			System.out.println("");
 			System.out.println("");
 			System.out.println("Transactions per Second is: " + txs);
@@ -86,7 +86,7 @@ public class Main {
 			System.out.println("Length of chain is: " + chain_size);
 			System.out.println("");
 			System.out.println("");
-			System.out.println("");*/
+			System.out.println("");
 			}
 		}
 		

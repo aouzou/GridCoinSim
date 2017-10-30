@@ -7,6 +7,8 @@ public class Blockchain {
 	
 	public Blockchain(){
 		chain = new ArrayList<Block>();
+		chain.add(new Block());
+		length = 1;
 	}
 	
 	public Blockchain(ArrayList<Block> chain){
@@ -33,6 +35,10 @@ public class Blockchain {
 	public int depth_of(Block b){
 		int index = chain.lastIndexOf(b);
 		return chain.size()-index;
+	}
+	
+	public Block get(int index){
+		return chain.get(index);
 	}
 	
 	public boolean contains(Block b){

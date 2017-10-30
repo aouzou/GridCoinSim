@@ -5,12 +5,17 @@ public class Miner_Node extends Node{
 
 	ArrayList<Job> jobs_to_do;
 	ArrayList<Job> jobs_done;
+	private int job_difficulty;
 	
 	
 	public Miner_Node(int id){
 		this.id = id;
 		jobs_to_do = new ArrayList<Job>();
 		jobs_done = new ArrayList<Job>();
+	}
+	
+	public void update_difficulty(){
+		
 	}
 	
 	public void run(){

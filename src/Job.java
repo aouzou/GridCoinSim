@@ -47,7 +47,12 @@ public class Job {
 	
 	public void iterate(){
 		
-		
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		String command = program[current_line];
 		int num_a = variable_state.pop();
 		int num_b = variable_state.pop();

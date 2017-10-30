@@ -12,7 +12,6 @@ public class Master_Node extends Node {
 	private int num_jobs = 10;
 	private int job_id_number = 0;
 	
-	private int job_difficulty = 1;
 	private long sample_time = 10000;
 	private long prev_time = System.currentTimeMillis();
 	private int prev_blockchain_length;
@@ -25,43 +24,35 @@ public class Master_Node extends Node {
 		job_miner_pairs = new ArrayList<int[]>();
 		blockchain = new Blockchain();
 		to_add = new ArrayList<Block>();
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {e.printStackTrace();}
 	}
 	
 	public void poke(){
 		System.out.println("I'm being poked! " + id);
 	}
 	
+	public int job_difficulty(){
+		return blockchain.get(blockchain.length-1).current_difficulty;
+	}
+	
 	public Job create_job(){
-		
+		update_blockchain();
 		String[] program = {"50","50","ADD","2","DIV"};
 		
 		ArrayDeque<Integer> variable_state = new ArrayDeque<Integer>();
 		variable_state.push(0);
 		variable_state.push(0);
 		
-		Job job = new Job(variable_state, program, 0, job_id_number, job_difficulty);
+		Job job = new Job(variable_state, program, 0, job_id_number, job_difficulty());
 		job_id_number++;
 		
 		return job;
 	}
 	
-	public void update_difficulty(){
-		long time = System.currentTimeMillis();
-		long dt = time - prev_time;
-		if(dt > sample_time){
-			System.out.println("job difficulty " + job_difficulty);
-			double txs = (blockchain.length() - prev_blockchain_length)/(dt/1000);
-			job_difficulty = job_difficulty*(int)(txs/Main.desired_txs);
-			job_difficulty = Math.max(job_difficulty, 1);
-			System.out.println(txs + " and job difficulty " + job_difficulty);
-			prev_blockchain_length = blockchain.length();
-			prev_time = time;
-		}
-	}
-	
 	public void run(){
 		while(true){
-			update_difficulty();
 			while(available.size() < num_jobs){
 				available.add(create_job());
 				try {sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
@@ -92,6 +83,25 @@ public class Master_Node extends Node {
 	}
 	
 	
+	public int find_difficulty(long time){
+		int prev_difficulty = blockchain.get(blockchain.length-1).current_difficulty;
+		if(blockchain.length()%2016 == 0 && blockchain.length > 2016){
+			int index = blockchain.length() - 50;
+			long dt = time - blockchain.get(index).time_minted;
+			int num_blocks = Math.min(blockchain.length, 50);
+			
+			if(dt == 0){
+				System.out.println("bugger");
+				return prev_difficulty;
+			}
+			double rate = num_blocks/dt;
+			
+			int new_difficulty = (int) (prev_difficulty*(Main.desired_txs/rate));
+			return new_difficulty;
+		}
+		return prev_difficulty;
+	}
+	
 	public void receive(Miner_Node miner, Job job){
 		int[] pair = {job.id, miner.id};
 		boolean is_valid = job_miner_pairs.remove(pair);
@@ -114,9 +124,16 @@ public class Master_Node extends Node {
 		ArrayList<Block> to_be_removed = new ArrayList<Block>();
 		for(int i = 0; i < to_add.size(); i++){
 			Block b = to_add.get(i);
+			if(b == null){
+				System.out.println("Oh noes!");
+				System.out.println("The index was: " + i);
+				System.out.println("The length of 'to_add' was: " + to_add.size());
+			}
+			long time = System.currentTimeMillis();
+			b.set_timeDifficulty(time, find_difficulty(time));
 			if(!blockchain.contains(b)){
 				blockchain.add(b);
-			}else if(blockchain.depth_of(b) > 10){
+			}else if(blockchain.depth_of(b) > 10){//remember to set time and difficulty
 				to_be_removed.add(b);
 			}
 		}
@@ -125,7 +142,7 @@ public class Master_Node extends Node {
 		}
 	}
 	
-	public void update_blockchain(){
+	public void update_blockchain(){//remember to update this method with validation steps.
 		int chain_size = blockchain.length();
 		Blockchain chain = blockchain;
 		for(Master_Node m: Main.master_nodes){
