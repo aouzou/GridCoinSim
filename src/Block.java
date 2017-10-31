@@ -8,6 +8,15 @@ public class Block {
 	int reward;
 	int block_number;
 	int xor_index;
+	int id;
+	
+	int xor;
+	int prev_xor;
+	
+	ArrayList<Integer> variable_state;
+	ArrayList<Integer> prev_variable_state;
+	
+	String operation;
 	
 	long time_minted;
 	
@@ -20,7 +29,15 @@ public class Block {
 		reward = job.reward;
 		xor_index = index;
 		
+		variable_state = (ArrayList<Integer>) job.variable_history.get(index).clone();
+		prev_variable_state = (ArrayList<Integer>) job.variable_history.get(index-1).clone();
+	
+		xor = job.XOR_history.get(index);
+		prev_xor = job.XOR_history.get(index-1);
 		time_minted = System.currentTimeMillis();
+		
+		operation = job.command_at(job.command_line_history.get(index-1));
+		id = (int)(Math.random()*Integer.MAX_VALUE);
 		
 	}
 	
@@ -28,7 +45,7 @@ public class Block {
 	master_id = -1;
 	miner_id = -1;
 	block_number = 0;
-	current_difficulty = 1000;
+	current_difficulty = 1;
 	time_minted = System.currentTimeMillis();
 	}
 	
@@ -47,6 +64,8 @@ public class Block {
 		}if(other_block.xor_index != xor_index){
 			return false;
 		}if(other_block.job_id != job_id){
+			return false;
+		}if(other_block.id != id){
 			return false;
 		}
 		return true;

@@ -3,17 +3,27 @@ import java.util.ArrayList;
 public class Blockchain {
 	
 	private ArrayList<Block> chain;
-	public int length = 0;
 	
 	public Blockchain(){
 		chain = new ArrayList<Block>();
 		chain.add(new Block());
-		length = 1;
+	}
+	
+	public void remove(int index){
+		chain.remove(index);
 	}
 	
 	public Blockchain(ArrayList<Block> chain){
 		this.chain = chain;
-		this.length = chain.size();
+	}
+	
+	public void concatenate(int index, Blockchain other){
+		for(int i = 0; i < index; i++){
+			chain.remove(chain.size()-1);
+		}
+		for(int i = 0; i < other.length(); i++){
+			chain.add(other.get(i));
+		}
 	}
 	
 	public Blockchain clone(){
@@ -24,12 +34,10 @@ public class Blockchain {
 	//when a job is done NOT when it is offered, it is added to the block chain. The job is officially over and payment is given. 
 	public void add(Job job, Master_Node master, Miner_Node miner, int index){
 		chain.add(new Block(job, master, miner, index));
-		length++;
 	}
 	
 	public void add(Block b){
 		chain.add(b);
-		length++;
 	}
 	
 	public int depth_of(Block b){
@@ -59,7 +67,7 @@ public class Blockchain {
 	*/
 	
 	public int length(){
-		return length;
+		return chain.size();
 	}
 	
 	
