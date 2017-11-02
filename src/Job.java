@@ -42,6 +42,7 @@ public class Job {
 		XORS_passed = new ArrayList<Integer>();
 		this.difficulty = difficulty;
 		id = (int)(Math.random()*Integer.MAX_VALUE);
+		XOR = id;
 		
 	}
 	
@@ -74,13 +75,13 @@ public class Job {
 		}
 		
 		XOR_history.add(XOR);
-		XOR = XOR^num_a;
+		
 		
 		if(XOR%difficulty == 0  && current_line != 0){
 			XORS_passed.add(XOR_history.size()-1);
 		}
 		
-		
+		XOR = XOR^num_a;
 		
 		
 		ArrayList<Integer> new_history = new ArrayList<Integer>();

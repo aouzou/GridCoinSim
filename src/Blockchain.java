@@ -67,6 +67,9 @@ public class Blockchain {
 	*/
 	
 	public int length(){
+		if(chain == null){
+			return 0;
+		}
 		return chain.size();
 	}
 	

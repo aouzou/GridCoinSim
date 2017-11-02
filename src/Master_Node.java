@@ -8,7 +8,7 @@ public class Master_Node extends Node {
 	ArrayList<int[]> job_miner_pairs;
 
 	ArrayList<Block> to_add;
-
+	
 	private int num_jobs = 10;
 	private int job_id_number = 0;
 
@@ -19,6 +19,7 @@ public class Master_Node extends Node {
 	public static final int NUM_CHECKS = 100;
 
 	public Master_Node(int id) {
+		//Main.record.add("Master node " + id + " created at " + System.currentTimeMillis());
 		this.id = id;
 		available = new ArrayList<Job>();
 		job_miner_pairs = new ArrayList<int[]>();
@@ -31,6 +32,16 @@ public class Master_Node extends Node {
 		}
 	}
 
+	public Blockchain blockchain(int index_from){
+		Blockchain chain = new Blockchain();
+		chain = new Blockchain();
+		chain.remove(0);
+		for(int i = blockchain.length()-1; i < blockchain.length() && i >= 0; i++){
+			chain.add(blockchain.get(i));
+		}
+		return chain;
+	}
+	
 	public void poke() {
 		System.out.println("I'm being poked! " + id);
 	}
@@ -55,6 +66,7 @@ public class Master_Node extends Node {
 
 	public void run() {
 		while (true) {
+			try{
 			while (available.size() < num_jobs) {
 				available.add(create_job());
 				try {
@@ -71,6 +83,10 @@ public class Master_Node extends Node {
 
 			add_blocks();
 		}
+		catch(java.lang.NullPointerException e){
+			blockchain = new Blockchain();		
+		}
+	}
 	}
 
 	public Job allocate(Miner_Node miner) {
@@ -82,6 +98,7 @@ public class Master_Node extends Node {
 			int[] pair = { job.id, miner.id };
 			job_miner_pairs.ensureCapacity(job_miner_pairs.size() * 2);
 			job_miner_pairs.add(pair);
+			//Main.record.add("Master node " + id + " Allocated Job to: " + miner.id + " at time: " + System.currentTimeMillis());
 			return job;
 		} else {
 			return null;
@@ -93,22 +110,30 @@ public class Master_Node extends Node {
 	}
 
 	public int find_difficulty(long time) {
-		int prev_difficulty = blockchain.get(blockchain.length() - 1).current_difficulty;
-		if (blockchain.length() % 2016 == 0 && blockchain.length() > 2016) {
-			int index = blockchain.length() - 50;
-			long dt = time - blockchain.get(index).time_minted;
-			int num_blocks = Math.min(blockchain.length(), 50);
 
+		try{
+		int prev_difficulty = blockchain.get(blockchain.length() - 1).current_difficulty;
+		
+		
+		if (blockchain.length() % 2000 == 0 && blockchain.length() > 0) {
+			int num_blocks = 1000;
+			int index = blockchain.length() - num_blocks;
+			long dt = (time - blockchain.get(index).time_minted)/1000;
+			
 			if (dt == 0) {
-				System.out.println("bugger");
-				return prev_difficulty;
+				return prev_difficulty*2;
 			}
 			double rate = num_blocks / dt;
 
 			int new_difficulty = (int) (prev_difficulty * (Main.desired_txs / rate));
-			return new_difficulty;
+			return Math.max(new_difficulty, 1);
 		}
 		return prev_difficulty;
+		
+		}catch(java.lang.NullPointerException e){
+			return Main.num_miner_nodes/10; 
+		}
+		
 	}
 
 	public void receive(Miner_Node miner, Job job) {
@@ -138,9 +163,9 @@ public class Master_Node extends Node {
 				b.set_timeDifficulty(time, find_difficulty(time));
 				if (!blockchain.contains(b)) {
 					blockchain.add(b);
-				} else if (blockchain.depth_of(b) > 50) {// remember to set time
-															// and difficulty
+				} else if (blockchain.depth_of(b) > 50) {// remember to set time and difficulty
 					to_be_removed.add(b);
+					//Main.record.add("Master node " + id + " confirms that block is added ");
 				}
 			} else {
 				Main.blocks_dumped++;
@@ -158,17 +183,17 @@ public class Master_Node extends Node {
 	public void update_blockchain() {// remember to update this method with
 										// validation steps.
 		int chain_size = blockchain.length();
-
+		//Main.record.add("Master node " + id + " updated blockchain at: " + System.currentTimeMillis());
 		Blockchain chain = blockchain;
 
-		if (chain_size <= 50) {
+		if (chain_size < 110) {
 			for (Master_Node m : Main.master_nodes) {
-				chain = m.blockchain;
 				if (m.blockchain.length() > chain_size) {
 					chain = m.blockchain;
 					chain_size = chain.length();
 				}
 			}
+			
 			blockchain = chain.clone();
 			return;
 		}
@@ -181,20 +206,20 @@ public class Master_Node extends Node {
 				
 				chain = new Blockchain();
 				Block comparison_block = blockchain.get(blockchain.length() - 50);
-				int start = m.blockchain.length() - 1;
-
-				for (int i = 0; i < m.blockchain.length(); i++) {
-					chain.add(m.blockchain.get(m.blockchain.length() - i - 1));
-					if (m.blockchain.get(m.blockchain.length() - i - 1).equals(comparison_block)) {
+				Blockchain other_chain = m.blockchain(100);
+				for (int i = 0; i < other_chain.length(); i++) {
+					chain.add(other_chain.get(other_chain.length() - i - 1));
+					if (other_chain.get(other_chain.length() - i - 1).equals(comparison_block)) {
 						if (true) {
-							blockchain.concatenate(50, chain);// if it doesn't work, check this again
+							blockchain.concatenate(50, other_chain);// if it doesn't work, check this again
 							chain_size = blockchain.length();
 						} else {
 							break;
 						}
 					}
 				}
-
+				//Main.record.add("Master node " + id + " replaced own blockchain " + System.currentTimeMillis());
+				blockchain = m.blockchain.clone();
 			}
 
 		}
