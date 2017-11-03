@@ -67,7 +67,7 @@ public class Master_Node extends Node {
 	public void run() {
 		while (true) {
 			try{
-			while (available.size() < num_jobs) {
+			while (available.size() < num_jobs && to_add.size() < 50) {
 				available.add(create_job());
 				try {
 					sleep(100);
@@ -136,7 +136,7 @@ public class Master_Node extends Node {
 		
 	}
 
-	public void receive(Miner_Node miner, Job job) {
+	public boolean receive(Miner_Node miner, Job job) {
 		int[] pair = { job.id, miner.id };
 
 		int is_valid = pair_isValid(pair);
@@ -149,8 +149,10 @@ public class Master_Node extends Node {
 				to_add.add(block);
 				Main.tot_jobs_done++;
 			}
-
+			return true;
 		}
+		
+		return false;
 	}
 
 	public void add_blocks() {
@@ -228,7 +230,7 @@ public class Master_Node extends Node {
 	public boolean chain_isValid(Blockchain chain) {
 
 		for (int i = 1; i < chain.length(); i++) {
-			if (!block_isValid(chain.get(i))) {
+			if (!block_isValid(chain.get(i), chain.get(i-1))) {
 				return false;
 			}
 		}
@@ -236,18 +238,39 @@ public class Master_Node extends Node {
 		return true;
 	}
 
-	public boolean block_isValid(Block block) {
+	public boolean block_isValid(Block block, Block prev_block) {
 		if (block.operation == null) {
 			Main.blocks_dumped++;
+			//System.out.println("Dumped block due to null");
 			return false;
 		}
-		return step_isValid(block.prev_variable_state, block.variable_state, block.operation, block.prev_xor,
-				block.xor);
+		if(!step_isValid(block.prev_variable_state, block.variable_state, block.operation, block.prev_xor,
+				block.xor)){
+			return false;
+		}if(block.xor%block.current_difficulty != 0){
+			//System.out.println("Failed on XOR difficulty check");
+			return false;
+		}
+		/*
+		if(block.time_minted < prev_block.time_minted){
+			System.out.println("Failed on Time Minted: " + block.time_minted + " " + prev_block.time_minted);
+			return false;
+		}
+		*/
+		return true;
 	}
 
 	public void remove_job(Job job) {
 		available.remove(job);
 
+	}
+	
+	public Job get_original(Job job){
+		if(available.contains(job)){
+			int index = available.indexOf(job);
+			return available.get(index);
+		}
+		return null;
 	}
 
 	public boolean is_correct_hash(Job job) {
@@ -260,9 +283,21 @@ public class Master_Node extends Node {
 	public boolean verify_job(Job job) {
 
 		int history_size = job.command_line_history.size();
+		
+		Job original = get_original(job);
+		
+		if(original.program.length != job.program.length){
+			return false;
+		}
+		
+		for(int i = 0; i < original.program.length; i++){
+			if(!original.program[i].equals(job.program[i])){
+				return false;
+			}
+		}
 
 		if (history_size != job.variable_history.size()) {
-			System.out.println("Failed on variable history size check");
+			//System.out.println("Failed on variable history size check");
 			return false;
 		}
 
@@ -274,18 +309,20 @@ public class Master_Node extends Node {
 			ArrayList<Integer> vars_b = job.history_at(index + 1);
 
 			if (job.XOR_history.size() != history_size) {
-				System.out.println("Failed on xor history size check");
+				//System.out.println("Failed on xor history size check");
 				return false;
 			}
 
 			for (int xor_index : job.XORS_passed) {
 				if (job.XOR_history.get(xor_index) % job.difficulty != 0) {
-					System.out.println("Failed on XORs passed check");
+					//System.out.println("Failed on XORs passed check");
 					return false;
 				}
 			}
 
-			return step_isValid(vars_a, vars_b, command, job.XOR_history.get(index), job.XOR_history.get(index + 1));
+			if(!step_isValid(vars_a, vars_b, command, job.XOR_history.get(index), job.XOR_history.get(index + 1))){
+				return false;
+			}
 
 		}
 
@@ -296,28 +333,32 @@ public class Master_Node extends Node {
 
 	public boolean step_isValid(ArrayList<Integer> vars_a, ArrayList<Integer> vars_b, String command, int xor_a,
 			int xor_b) {
-
+		try{
 		if (command.equals("ADD") && (vars_b.get(1) != vars_a.get(0) + vars_a.get(1))) {
-			System.out.println("Failed on add check");
+			//System.out.println("Failed on add check");
 			return false;
 		} else if (command.equals("SUB") && (vars_b.get(1) != vars_a.get(0) - vars_a.get(1))) {
-			System.out.println("Failed on sub check");
+			//System.out.println("Failed on sub check");
 			return false;
 		} else if (command.equals("MULT") && (vars_b.get(1) != vars_a.get(0) * vars_a.get(1))) {
-			System.out.println("Failed on mult check");
+			//System.out.println("Failed on mult check");
 			return false;
 		} else if (command.equals("DIV") && (vars_b.get(1) != vars_a.get(0) / vars_a.get(1))) {
-			System.out.println("Failed on div check");
+			//System.out.println("Failed on div check");
 			return false;
 		} else if (!command.equals("ADD") && !command.equals("SUB") && !command.equals("MULT") && !command.equals("DIV")
 				&& vars_b.get(1) != Integer.parseInt(command)) {
-			System.out.println("Failed on push to stack check, " + command + " " + vars_b.get(0));
+			//System.out.println("Failed on push to stack check, " + command + " " + vars_b.get(0));
 			return false;
 		} else if (xor_b != (xor_a ^ vars_a.get(1))) {
-			System.out.println("Failed on XOR history fidelity check");
+			//System.out.println("Failed on XOR history fidelity check");
 			return false;
 		}
 		return true;
+		}catch(java.lang.NumberFormatException e){
+			//System.out.println("Failed due to bad programming");
+			return false;
+		}
 
 	}
 

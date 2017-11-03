@@ -5,7 +5,7 @@ import itertools
 
 
 xlabel = "time(s)"
-ylabel = ["time(s)", "Transactions per(s)", "Chain Length","Total Jobs Done"] 
+ylabel = ["time(s)", "Transactions per(s)", "Chain Length","Total Jobs Done","Wrong Masters Caught","Wrong Masters Passed","Wrong Jobs Caught","Wrong Jobs Passed","Bad Hashers Caught","Bad Hashers Passed","Bad Workers Caught","Bad Workers Passed","Bad Blocks Passed","Bad Blocks Made"] 
 
 
 def read_nums(line):
@@ -20,7 +20,9 @@ def read_nums(line):
             nums.append(r)
             r = ""
         i = i + 1
+
     return nums
+
             
 
 def graph_line(index, lines, smoothed):  
@@ -73,6 +75,17 @@ for line in file:
 graph_line(1, lines, True)
 graph_line(2, lines, False)
 graph_line(3, lines, False)
+graph_line(4, lines, False)
+graph_line(5, lines, False)
+graph_line(6, lines, False)
+graph_line(7, lines, False)
+graph_line(8, lines, False)
+graph_line(9, lines, False)
+graph_line(10, lines, False)
+graph_line(11, lines, False)
+graph_line(12, lines, False)
+graph_line(13, lines, False)
+
 
 
     
