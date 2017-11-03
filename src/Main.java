@@ -84,8 +84,8 @@ public class Main {
 			int difficulty = 0;
 			for(Master_Node m: Main.master_nodes){
 				if(m.blockchain.length() > chain_size){
-					chain_size = m.blockchain.length();
-					difficulty = m.blockchain.get(chain_size-1).current_difficulty;
+					chain_size = m.blockchain.length()-1;
+					difficulty = m.blockchain.get(chain_size).current_difficulty;
 				}
 			}
 			

@@ -188,7 +188,7 @@ public class Master_Node extends Node {
 
 		if (chain_size < 110) {
 			for (Master_Node m : Main.master_nodes) {
-				if (m.blockchain.length() > chain_size) {
+				if (m.blockchain.length() > chain_size && chain_isValid(m.blockchain)) {
 					chain = m.blockchain;
 					chain_size = chain.length();
 				}
@@ -210,7 +210,7 @@ public class Master_Node extends Node {
 				for (int i = 0; i < other_chain.length(); i++) {
 					chain.add(other_chain.get(other_chain.length() - i - 1));
 					if (other_chain.get(other_chain.length() - i - 1).equals(comparison_block)) {
-						if (true) {
+						if (chain_isValid(other_chain)) {
 							blockchain.concatenate(50, other_chain);// if it doesn't work, check this again
 							chain_size = blockchain.length();
 						} else {
