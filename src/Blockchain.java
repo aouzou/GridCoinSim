@@ -7,7 +7,7 @@ public class Blockchain {
 	public Blockchain(){
 		chain = new ArrayList<Block>();
 		chain.add(new Block());
-		chain.get(0).set_timeDifficulty(0,  Main.num_miner_nodes/10 + 1);
+		chain.get(0).set_timeDifficulty(0,  Main.num_miner_nodes/20 + 1);
 	}
 	
 	public void remove(int index){

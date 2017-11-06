@@ -14,19 +14,15 @@ public class Miner_Node extends Node{
 		jobs_done = new ArrayList<Job>();
 	}
 	
-	public void update_difficulty(){
-		
-	}
+
 	
 	public void run(){
 		while(true){
 			Master_Node master = Main.master_nodes.get((int)(Math.random()*Main.num_master_nodes));
 			request_job(master);
-			
 			while(jobs_to_do.size() > 0){
-			try {sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
-			execute_job(0);
-			submit(master, 0);
+				execute_job(0, master);
+				submit(master, 0);
 			}
 			
 		}
@@ -44,16 +40,24 @@ public class Miner_Node extends Node{
 		
 	}
 	
-	public void execute_job(int job_index){
-		Job job = jobs_to_do.get(job_index).execute();
-		jobs_to_do.remove(job);
-		jobs_done.add(job);
+	public void set_difficulty(Master_Node master, Job job){
+		int difficulty = master.job_difficulty();
+		job.difficulty = difficulty;
+		
+	}
+	
+	public void execute_job(int job_index, Master_Node master){
+		
 		try {
 			sleep(10000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		set_difficulty(master, jobs_to_do.get(job_index));
+		Job job = jobs_to_do.get(job_index).execute();
+		jobs_to_do.remove(job);
+		jobs_done.add(0,job);
+		
 	}
 	
 	public void submit(Master_Node master, int job_index){

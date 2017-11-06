@@ -15,10 +15,11 @@ public class Miner_Wrong_Master extends Miner_Node{
 		Job job = jobs_done.get(job_index);
 		if(new_master.receive(this, job)){
 			Main.Wrong_Masters_Passed++;
+			System.out.println("job id: " + job.id + " Miner ID: " + id);
 		}else{
 			Main.Wrong_Masters_Caught++;
 		}
-		jobs_done.remove(job);
+		jobs_done.remove(job);	
 	}
 	
 	public Master_Node random_master(){

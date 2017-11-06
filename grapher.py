@@ -5,7 +5,7 @@ import itertools
 
 
 xlabel = "time(s)"
-ylabel = ["time(s)", "Transactions per(s)", "Chain Length","Total Jobs Done","Wrong Masters Caught","Wrong Masters Passed","Wrong Jobs Caught","Wrong Jobs Passed","Bad Hashers Caught","Bad Hashers Passed","Bad Workers Caught","Bad Workers Passed","Bad Blocks Passed","Bad Blocks Made"] 
+ylabel = ["time(s)", "Transactions per(s)", "Chain Length","Total Jobs Done","Wrong Masters Caught","Wrong Masters Passed","Wrong Jobs Caught","Wrong Jobs Passed","Bad Hashers Caught","Bad Hashers Passed","Bad Workers Caught","Bad Workers Passed","Bad Blocks Passed","Bad Blocks Made","Difficulty"] 
 
 
 def read_nums(line):
@@ -85,6 +85,7 @@ graph_line(10, lines, False)
 graph_line(11, lines, False)
 graph_line(12, lines, False)
 graph_line(13, lines, False)
+graph_line(14, lines, False)
 
 
 

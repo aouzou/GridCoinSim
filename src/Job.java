@@ -28,6 +28,8 @@ public class Job {
 	
 	public Job clone(){
 		Job job = new Job(variable_state.clone(), program.clone(), current_line, id, difficulty);
+		job.id = id;
+		job.XOR = XOR;
 		return job;
 	}
 	
@@ -41,8 +43,8 @@ public class Job {
 		XOR_history = new ArrayList<Integer>();
 		XORS_passed = new ArrayList<Integer>();
 		this.difficulty = difficulty;
-		id = (int)(Math.random()*Integer.MAX_VALUE);
-		XOR = id;
+		this.id = 1+(int)(Math.random()*Integer.MAX_VALUE-1);
+		XOR = this.id;
 		
 	}
 	

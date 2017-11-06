@@ -115,23 +115,23 @@ public class Master_Node extends Node {
 		int prev_difficulty = blockchain.get(blockchain.length() - 1).current_difficulty;
 		
 		
-		if (blockchain.length() % 2000 == 0 && blockchain.length() > 0) {
-			int num_blocks = 1000;
+		if (blockchain.length() % 500 == 0 && blockchain.length() > 0) {
+			int num_blocks = 250;
 			int index = blockchain.length() - num_blocks;
 			long dt = (time - blockchain.get(index).time_minted)/1000;
 			
 			if (dt == 0) {
-				return prev_difficulty*2;
+				return prev_difficulty;
 			}
 			double rate = num_blocks / dt;
 
-			int new_difficulty = (int) (prev_difficulty * (Main.desired_txs / rate));
+			int new_difficulty = (int) (prev_difficulty * (rate / Main.desired_txs));
 			return Math.max(new_difficulty, 1);
 		}
 		return prev_difficulty;
 		
 		}catch(java.lang.NullPointerException e){
-			return Main.num_miner_nodes/10; 
+			return Main.num_miner_nodes/20+1; 
 		}
 		
 	}
@@ -149,6 +149,7 @@ public class Master_Node extends Node {
 				to_add.add(block);
 				Main.tot_jobs_done++;
 			}
+			
 			return true;
 		}
 		
@@ -161,9 +162,9 @@ public class Master_Node extends Node {
 		for (int i = 0; i < to_add.size(); i++) {
 			Block b = to_add.get(i);
 			if (b != null) {
-				long time = System.currentTimeMillis();
-				b.set_timeDifficulty(time, find_difficulty(time));
 				if (!blockchain.contains(b)) {
+					long time = System.currentTimeMillis();
+					b.set_timeDifficulty(time, find_difficulty(time));
 					blockchain.add(b);
 				} else if (blockchain.depth_of(b) > 50) {// remember to set time and difficulty
 					to_be_removed.add(b);
@@ -285,6 +286,10 @@ public class Master_Node extends Node {
 		int history_size = job.command_line_history.size();
 		
 		Job original = get_original(job);
+		
+		if(original == null){
+			return false;
+		}
 		
 		if(original.program.length != job.program.length){
 			return false;

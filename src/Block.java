@@ -45,7 +45,7 @@ public class Block {
 	master_id = -1;
 	miner_id = -1;
 	block_number = 0;
-	current_difficulty = Main.num_miner_nodes/10 + 1;
+	current_difficulty = Main.num_miner_nodes/20 + 1;
 	time_minted = System.currentTimeMillis();
 	}
 	
@@ -70,7 +70,6 @@ public class Block {
 		}
 		return true;
 	}
-	
 	
 	
 }

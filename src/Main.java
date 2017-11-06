@@ -32,6 +32,7 @@ public class Main {
 	
 	static int Wrong_Jobs_Passed = 0;
 	static int Wrong_Jobs_Caught = 0;
+	
 
 	
 	private static ArrayList<String> record = new ArrayList<String>();
@@ -82,7 +83,6 @@ public class Main {
 			}
 			
 		}
-		
 		System.out.println("Created Miner Nodes");
 		
 		for(Master_Node m: master_nodes){
@@ -111,7 +111,7 @@ public class Main {
 		System.out.println("Activated Miner Nodes");
 
 		long start_time = System.currentTimeMillis();
-		while(System.currentTimeMillis()-start_time < 60000){
+		while(System.currentTimeMillis()-start_time < 600000){
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -140,7 +140,7 @@ public class Main {
 			if(tot_jobs_done > 0){
 			
 			int percentage = (100*chain_size)/tot_jobs_done;
-			Main.record.add((System.currentTimeMillis() - start_time)/1000 + " Transactions per second: " + txs + " Chain size is: " + chain_size + " Total Jobs Done is: " + tot_jobs_done + " Wrong Masters Caught: " + Wrong_Masters_Caught + " Wrong Masters Passed: " + Wrong_Masters_Passed + " Wrong Jobs Caught: " + Wrong_Jobs_Caught + " Wrong Jobs Passed: " + Wrong_Jobs_Passed + " Bad Hashers Caught: " + Wrong_Hashers_Caught + " Bad Hashers Passed: " + Wrong_Hashers_Passed + " Bad Workers Caught: " + Wrong_Workers_Caught + " Wrong_Workers_Passed: " + Wrong_Workers_Passed + " Wrong Blocks Passed: " + Wrong_Blocks_Passed + " Wrong Blocks Made: " + Wrong_Blocks_Made);
+			Main.record.add((System.currentTimeMillis() - start_time)/1000 + " Transactions per second: " + txs + " Chain size is: " + chain_size + " Total Jobs Done is: " + tot_jobs_done + " Wrong Masters Caught: " + Wrong_Masters_Caught + " Wrong Masters Passed: " + Wrong_Masters_Passed + " Wrong Jobs Caught: " + Wrong_Jobs_Caught + " Wrong Jobs Passed: " + Wrong_Jobs_Passed + " Bad Hashers Caught: " + Wrong_Hashers_Caught + " Bad Hashers Passed: " + Wrong_Hashers_Passed + " Bad Workers Caught: " + Wrong_Workers_Caught + " Wrong_Workers_Passed: " + Wrong_Workers_Passed + " Wrong Blocks Passed: " + Wrong_Blocks_Passed + " Wrong Blocks Made: " + Wrong_Blocks_Made + " Difficulty: " + difficulty);
 			
 			System.out.println("");
 			System.out.println("Transactions per Second is: " + txs + " at difficulty: " + difficulty);
@@ -150,7 +150,7 @@ public class Main {
 			System.out.println("Length of chain is: " + chain_size);
 			System.out.println("");
 			System.out.println("Number of nodes to be added: " + master_nodes.get(0).to_add.size());
-			System.out.println("Number of Wrong Masters passed: " + Wrong_Masters_Passed + " Wrong Masters Failed: " + Wrong_Masters_Caught);
+			System.out.println("");
 			System.out.println("Length of chains are: " + master_nodes.get(0).blockchain.length() + " and " + master_nodes.get(1).blockchain.length());
 			}
 		}
