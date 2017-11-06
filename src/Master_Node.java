@@ -368,7 +368,7 @@ public class Master_Node extends Node {
 	}
 
 	public int pair_isValid(int[] pair) {
-		if(job_miner_pairs.equals(null)){
+		if(job_miner_pairs == null){
 			job_miner_pairs = new ArrayList<int[]>();
 			return -1;
 		}
