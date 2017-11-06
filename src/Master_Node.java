@@ -84,7 +84,7 @@ public class Master_Node extends Node {
 			add_blocks();
 		}
 		catch(java.lang.NullPointerException e){
-			blockchain = new Blockchain();		
+			blockchain = new Blockchain();
 		}
 	}
 	}
@@ -149,7 +149,7 @@ public class Master_Node extends Node {
 				to_add.add(block);
 				Main.tot_jobs_done++;
 			}
-			
+			Main.tot_tasks_done++;
 			return true;
 		}
 		
@@ -368,6 +368,10 @@ public class Master_Node extends Node {
 	}
 
 	public int pair_isValid(int[] pair) {
+		if(job_miner_pairs.equals(null)){
+			job_miner_pairs = new ArrayList<int[]>();
+			return -1;
+		}
 		for (int i = 0; i < job_miner_pairs.size(); i++) {
 			if (pair[0] == job_miner_pairs.get(i)[0] && pair[1] == job_miner_pairs.get(i)[1]) {
 				job_miner_pairs.remove(i);

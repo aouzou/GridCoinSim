@@ -49,10 +49,11 @@ def graph_line(index, lines, smoothed):
 
 
 def moving_average(data):
+    res = 50
     r = []
     for index in range(len(data)):
-        start = max(0, index - 15)
-        stop = min(index + 15, len(data))
+        start = max(0, index - res)
+        stop = min(index + res, len(data))
 
         sum = 0
         num = 0
