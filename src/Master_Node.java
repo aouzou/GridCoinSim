@@ -31,12 +31,18 @@ public class Master_Node extends Node {
 			e.printStackTrace();
 		}
 	}
-
-	public Blockchain blockchain(int index_from){
+	
+	/**
+	 * Returns a blockchain consisting of the num last blocks of this master node's blockchain.  
+	 *
+	 * @param  int num - the number of blocks to be returned 
+	 * @return Blockchain - a blockchain made up of the last blocks of this node's blockchain
+	 */
+	public Blockchain blockchain(int num){
 		Blockchain chain = new Blockchain();
 		chain = new Blockchain();
 		chain.remove(0);
-		for(int i = blockchain.length()-1; i < blockchain.length() && i >= 0; i++){
+		for(int i = blockchain.length()-num-1; i < blockchain.length() && i >= 0; i++){
 			chain.add(blockchain.get(i));
 		}
 		return chain;
@@ -45,11 +51,21 @@ public class Master_Node extends Node {
 	public void poke() {
 		System.out.println("I'm being poked! " + id);
 	}
-
+	
+	/**
+	 * Returns the difficulty of the last block on this nodes blockchain
+	 *
+	 * @return int - the difficulty
+	 */
 	public int job_difficulty() {
 		return blockchain.get(blockchain.length() - 1).current_difficulty;
 	}
 
+	/**
+	 * Creates a job
+	 *
+	 * @return Job - the Job
+	 */
 	public Job create_job() {
 		update_blockchain();
 		String[] program = { "50", "50", "ADD", "2", "DIV" };
@@ -64,6 +80,12 @@ public class Master_Node extends Node {
 		return job;
 	}
 
+    
+	/**
+	 * The Master_Node thread run cycle. It creates a list of jobs, and adds any valid blocks to the blockchain.
+	 * Thread sleeps between tasks for realism. 
+	 * 
+	 */
 	public void run() {
 		while (true) {
 			try{
@@ -208,13 +230,13 @@ public class Master_Node extends Node {
 			if (m.blockchain.length() > blockchain.length()) {
 				
 				chain = new Blockchain();
-				Block comparison_block = blockchain.get(blockchain.length() - 50);
+				Block comparison_block = blockchain.get(blockchain.length() - 1 - 50);
 				Blockchain other_chain = m.blockchain(100);
 				for (int i = 0; i < other_chain.length(); i++) {
 					chain.add(other_chain.get(other_chain.length() - i - 1));
 					if (other_chain.get(other_chain.length() - i - 1).equals(comparison_block)) {
 						if (chain_isValid(other_chain)) {
-							blockchain.concatenate(50, other_chain);// if it doesn't work, check this again
+							blockchain.concatenate(50, i, other_chain);// if it doesn't work, check this again
 							chain_size = blockchain.length();
 						} else {
 							break;

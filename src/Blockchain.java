@@ -7,7 +7,7 @@ public class Blockchain {
 	public Blockchain(){
 		chain = new ArrayList<Block>();
 		chain.add(new Block());
-		chain.get(0).set_timeDifficulty(0,  Main.num_miner_nodes/20 + 1);
+		chain.get(0).set_timeDifficulty(0,  Main.num_miner_nodes/80 + 1);
 	}
 	
 	public void remove(int index){
@@ -18,11 +18,11 @@ public class Blockchain {
 		this.chain = chain;
 	}
 	
-	public void concatenate(int index, Blockchain other){
-		for(int i = 0; i < index; i++){
+	public void concatenate(int index_a, int index_b, Blockchain other){
+		for(int i = 0; i < index_a; i++){
 			chain.remove(chain.size()-1);
 		}
-		for(int i = 0; i < other.length(); i++){
+		for(int i = other.length() - 1 - index_b; i < other.length(); i++){
 			chain.add(other.get(i));
 		}
 	}

@@ -10,7 +10,7 @@ public class Main {
 	public static ArrayList<Miner_Node> miner_nodes; 
 	
 	static int num_master_nodes = 200;
-	static int num_miner_nodes = 1000;
+	static int num_miner_nodes = 10000;
 	static int tot_jobs_done = 0;
 	static long prev_time = System.currentTimeMillis();
 	static int prev_blockchain_length = 0;
